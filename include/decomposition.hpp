@@ -47,16 +47,24 @@ constexpr typename P::T offsetgen()
 }
 
 template <class P>
-inline void Decomposition(DecomposedPolynomial<P> &decpoly,
-                          const Polynomial<P> &poly, typename P::T randbits = 0)
+constexpr typename P::T totalOffset()
 {
-
     // lvl1 offset 0x82080000,         roundoffsetBit: 13, roundoffset: 0x2000,    totaloffset 0x82082000
     // lvl2 offset 0x8040201000000000, roundoffsetBit: 27, roundoffset: 0x8000000, totaloffset 0x8040201008000000
     constexpr typename P::T offset = offsetgen<P>();
     constexpr uint32_t roundoffsetBit = std::numeric_limits<typename P::T>::digits - P::l * P::Bgbit - 1;
     constexpr typename P::T roundoffset = 1ULL << roundoffsetBit;
     constexpr typename P::T totaloffset = offset + roundoffset;
+    return  totaloffset;
+}
+
+
+template <class P>
+inline void Decomposition(DecomposedPolynomial<P> &decpoly,
+                          const Polynomial<P> &poly, typename P::T randbits = 0)
+{
+
+    constexpr typename P::T total_offset = totalOffset<P>();
 
     constexpr auto mask = static_cast<typename P::T>((1ULL << P::Bgbit) - 1);
     constexpr typename P::T halfBg = (1ULL << (P::Bgbit - 1));
@@ -66,7 +74,7 @@ inline void Decomposition(DecomposedPolynomial<P> &decpoly,
     // lvl2   maxDigits 64, l 4  Bgbit 9, Bg 512,  halfBg: 256,   mask: 0x1ff (9 digits)
 
     for (int i = 0; i < P::n; i++) {
-        auto valuePlusOffset = poly[i] + totaloffset;
+        auto valuePlusOffset = poly[i] + total_offset;
         for (int ii = 0; ii < P::l; ii++) {
             auto digitsToShift = maxDigits - (ii + 1) * P::Bgbit;
             auto shiftedValue = valuePlusOffset >> digitsToShift;
