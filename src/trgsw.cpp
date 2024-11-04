@@ -1,5 +1,6 @@
 #include "decomposition.hpp"
 #include "trgsw.hpp"
+#include "trgsw_ntt.hpp"
 #include "externalproduct.hpp"
 
 namespace TFHEpp {

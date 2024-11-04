@@ -22,6 +22,7 @@
 #include "params.hpp"
 #include "tlwe.hpp"
 #include "trgsw.hpp"
+#include "trgsw_ntt.hpp"
 #include "decomposition.hpp"
 #include "externalproduct.hpp"
 #include "trlwe.hpp"

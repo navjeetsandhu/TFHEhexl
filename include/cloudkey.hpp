@@ -10,6 +10,7 @@
 #include "params.hpp"
 #include "tlwe.hpp"
 #include "trgsw.hpp"
+#include "trgsw_ntt.hpp"
 #include "trlwe.hpp"
 #include "utils.hpp"
 
@@ -140,7 +141,7 @@ void annihilatekeygen(AnnihilateKey<P>& ahk, const Key<P>& key)
     for (int i = 0; i < P::nbit; i++) {
         Polynomial<P> autokey;
         std::array<typename P::T, P::n> partkey;
-        for (int i = 0; i < P::n; i++) partkey[i] = key[0 * P::n + i];
+        for (int j = 0; j < P::n; j++) partkey[j] = key[0 * P::n + j];
         Automorphism<P>(autokey, partkey, (1 << (P::nbit - i)) + 1);
         ahk[i] = trgswfftSymEncrypt<P>(autokey, key);
     }
@@ -338,8 +339,8 @@ struct EvalKey {
         std::string, std::shared_ptr<SubsetPrivateKeySwitchingKey<lvl21param>>>
         subprivksklvl21;
 
-    EvalKey(SecretKey sk) { params = sk.params; }
-    EvalKey() {}
+    explicit EvalKey(SecretKey sk) { params = sk.params; }
+    EvalKey() = default;
 
     template <class Archive>
     void serialize(Archive& archive)
